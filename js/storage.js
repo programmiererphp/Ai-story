@@ -1,5 +1,23 @@
-/* localStorage wrapper with namespacing, migrations, and atomic transactions */
+/* localStorage wrapper with namespacing, migrations, and atomic transactions (+ polyfills) */
 (function () {
+  // ---- Polyfills ----
+  if (typeof window.structuredClone !== 'function') {
+    window.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+  }
+  function hasLocalStorage() {
+    try { localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return true; } catch { return false; }
+  }
+  if (!hasLocalStorage()) {
+    // Fallback in-memory store for very restrictive mobile contexts
+    console.warn('localStorage unavailable; using in-memory store');
+    const mem = new Map();
+    window.localStorage = {
+      getItem: k => (mem.has(k) ? mem.get(k) : null),
+      setItem: (k,v) => mem.set(k, String(v)),
+      removeItem: k => mem.delete(k)
+    };
+  }
+
   const NS = 'asg:';
   const KEYS = {
     version: NS + 'version',
@@ -23,22 +41,29 @@
       }
     },
     set(key, obj) {
-      localStorage.setItem(key, JSON.stringify(obj));
+      try { localStorage.setItem(key, JSON.stringify(obj)); }
+      catch (e) { console.warn('Store.set failed:', e); }
     },
     tx(fn) {
       // Atomic-ish: read -> mutate -> write. If it throws, nothing is saved.
-      const snapshot = {
+      const snap = {
         [KEYS.config]: this.get(KEYS.config) ?? {},
         [KEYS.prompts]: this.get(KEYS.prompts) ?? {},
         [KEYS.session]: this.get(KEYS.session) ?? {},
         [KEYS.history]: this.get(KEYS.history) ?? [],
       };
-      const next = fn(structuredClone(snapshot));
+      let next = null;
+      try {
+        next = fn(window.structuredClone ? structuredClone(snap) : JSON.parse(JSON.stringify(snap)));
+      } catch (e) {
+        console.warn('Store.tx mutate failed:', e);
+        return;
+      }
       if (!next) return;
-      this.set(KEYS.config,  next[KEYS.config]  ?? snapshot[KEYS.config]);
-      this.set(KEYS.prompts, next[KEYS.prompts] ?? snapshot[KEYS.prompts]);
-      this.set(KEYS.session, next[KEYS.session] ?? snapshot[KEYS.session]);
-      this.set(KEYS.history, next[KEYS.history] ?? snapshot[KEYS.history]);
+      try { this.set(KEYS.config,  next[KEYS.config]  ?? snap[KEYS.config]); } catch{}
+      try { this.set(KEYS.prompts, next[KEYS.prompts] ?? snap[KEYS.prompts]); } catch{}
+      try { this.set(KEYS.session, next[KEYS.session] ?? snap[KEYS.session]); } catch{}
+      try { this.set(KEYS.history, next[KEYS.history] ?? snap[KEYS.history]); } catch{}
     },
     ensureDefaults() {
       if (!localStorage.getItem(KEYS.version)) {
@@ -66,7 +91,6 @@
     migrateIfNeeded() {
       const v = this.get(KEYS.version, 0);
       if (v === CURRENT_VERSION) return;
-      // Future migration steps go here (v -> v+1)
       this.set(KEYS.version, CURRENT_VERSION);
     },
     clearAll() {
@@ -79,7 +103,7 @@
     Storage.migrateIfNeeded();
     Storage.ensureDefaults();
   } catch (e) {
-    console.warn('Storage init error; clearing corrupted data.', e);
+    console.warn('Storage init error; clearing data.', e);
     Storage.clearAll();
     Storage.ensureDefaults();
   }
