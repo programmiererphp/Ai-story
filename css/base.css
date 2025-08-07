@@ -1,0 +1,46 @@
+:root{
+  --bg:#fafafa; --text:#111; --muted:#666; --border:#ddd;
+  --u1:#f0f0f0; --u2:#e0e0e0; --ai:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background:var(--bg); color:var(--text);
+}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#fff; position:sticky; top:0; z-index:5}
+.topbar h1{margin:0; font-size:18px}
+.turn{font-weight:600; color:var(--muted)}
+.layout{display:grid; grid-template-columns: 1fr 340px; gap:16px; padding:16px}
+@media (max-width: 900px){ .layout{grid-template-columns:1fr} .controls-wrap{order:-1} }
+
+.story-wrap{background:#fff; border:1px solid var(--border); border-radius:8px; padding:12px; min-height:60vh}
+.story{max-width:70ch; margin:0 auto}
+.story p{margin:0 0 12px}
+.story .ai{border-left:3px solid #e6e6e6; padding-left:10px}
+.story .u1{background:var(--u1)}
+.story .u2{background:var(--u2)}
+.story mark{padding:0 3px; border-radius:4px}
+
+.controls-wrap{display:flex; flex-direction:column; gap:12px}
+.question{background:#fff; border:1px solid var(--border); border-radius:8px; padding:12px; min-height:52px}
+.options{display:grid; gap:8px}
+.options button{padding:8px 10px; border:1px solid var(--border); background:#fff; border-radius:6px; cursor:pointer}
+.custom-input textarea{width:100%; border:1px solid var(--border); border-radius:6px; padding:8px}
+.custom-input button{margin-top:6px; width:100%}
+.game-controls{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.game-controls .warn{background:#fff3f3; border:1px solid #ffc6c6}
+.import input{display:block; margin-top:6px}
+
+.settings{border:1px solid var(--border); border-radius:8px; background:#fff; padding:8px}
+.settings-grid{display:grid; grid-template-columns:1fr; gap:10px}
+.settings label{display:grid; gap:6px}
+.players label{display:block; margin:4px 0}
+.prompts-editor{border:1px dashed var(--border); padding:6px; border-radius:6px}
+
+.debug{border:1px solid var(--border); border-radius:8px; background:#fff}
+.debug-body{padding:8px}
+.debug-row{display:flex; gap:8px; margin-bottom:8px}
+#debug-log{max-height:240px; overflow:auto; background:#0a0a0a; color:#d4ffd4; padding:8px; border-radius:6px}
+button{cursor:pointer; border:1px solid var(--border); background:#fff; border-radius:6px; padding:8px 10px}
+button:active{transform:translateY(1px)}
