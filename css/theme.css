@@ -1,0 +1,9 @@
+/* Light theme placeholders for future theming */
+:root{
+  --accent:#3355ff;
+}
+button{border-color:#cfcfcf}
+button:hover{border-color:#bbb}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+summary{cursor:pointer; user-select:none}
