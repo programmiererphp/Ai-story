@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AI Story Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://openrouter.ai">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>AI Story Generator</h1>
+    <div class="turn" id="turn-indicator">—</div>
+  </header>
+
+  <main class="layout">
+    <section class="story-wrap">
+      <div id="story-pane" class="story"></div>
+    </section>
+
+    <aside class="controls-wrap">
+      <div id="question" class="question">Press Start to begin.</div>
+
+      <div class="options" id="options">
+        <!-- Buttons injected here -->
+      </div>
+
+      <div class="custom-input">
+        <textarea id="custom-input" placeholder="Or write your own line..." rows="3"></textarea>
+        <button id="send-btn">Send</button>
+      </div>
+
+      <div class="game-controls">
+        <button id="start-btn">Start</button>
+        <button id="reset-btn" class="warn">Reset</button>
+        <button id="export-btn">Export XML</button>
+        <label class="import">
+          Import XML
+          <input id="import-input" type="file" accept=".xml" />
+        </label>
+      </div>
+
+      <details id="settings" class="settings">
+        <summary>Settings</summary>
+        <div class="settings-grid">
+          <label>API Key
+            <input id="api-key" type="password" placeholder="OpenRouter API key">
+          </label>
+
+          <label>Model
+            <input id="model-id" type="text" value="openrouter/auto">
+          </label>
+
+          <label>Scenario
+            <select id="scenario-select"></select>
+          </label>
+
+          <label>Language
+            <select id="language-select">
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
+
+          <fieldset class="players">
+            <legend>Players</legend>
+            <label><input type="radio" name="mode" value="single" checked> Single</label>
+            <label><input type="radio" name="mode" value="two"> Two</label>
+            <label>Player 1 name
+              <input id="p1-name" type="text" value="User 1">
+            </label>
+            <label>Player 2 name
+              <input id="p2-name" type="text" value="User 2">
+            </label>
+          </fieldset>
+
+          <details class="prompts-editor">
+            <summary>Prompt Settings (optional overrides)</summary>
+            <div id="prompts-editor-host"></div>
+          </details>
+        </div>
+      </details>
+
+      <details id="debug" class="debug">
+        <summary>Debug Console</summary>
+        <div class="debug-body">
+          <div class="debug-row">
+            <button id="debug-copy">Copy Logs</button>
+            <button id="debug-clear">Clear Logs</button>
+          </div>
+          <pre id="debug-log"></pre>
+        </div>
+      </details>
+    </aside>
+  </main>
+
+  <!-- JS (order matters a bit: infra → domain → UI) -->
+  <script src="js/bus.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/openrouter.js"></script>
+  <script src="js/prompts.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/xml-io.js"></script>
+  <script src="js/state.js"></script>
+
+  <script src="js/ui/debug.js"></script>
+  <script src="js/ui/storyPane.js"></script>
+  <script src="js/ui/controls.js"></script>
+  <script src="js/ui/players.js"></script>
+  <script src="js/ui/settings.js"></script>
+  <script src="js/ui/app.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
